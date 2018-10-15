@@ -1,0 +1,7 @@
+{
+  "name": "TrackingMobileIonic",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
