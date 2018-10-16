@@ -7,6 +7,9 @@
 </ion-header>
 
 <ion-content padding>
-  The world is your oyster.
-  <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs">docs</a> will be your guide.</p>
+  <ion-button expand="full" (click)="startTracking()">Start Tracking</ion-button>
+  <ion-button expand="full" (click)="testConnection()">Test Connection</ion-button>
+  <ion-button expand="full" (click)="stopTracking()">Stop Tracking</ion-button>
+  Errors : {{errors}}<br>
+  Infos : {{infos}}
 </ion-content>
