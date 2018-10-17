@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { Geolocation,Geoposition } from '@ionic-native/geolocation/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { HubConnection } from '@aspnet/signalr';
 import { Subscription } from 'rxjs';
 import { Events } from '@ionic/angular';
+import 'rxjs/add/operator/filter';
 
 @Component({})
 export class Locator {
@@ -13,7 +15,7 @@ export class Locator {
     private idParcours: number;
     private watcher: Subscription;
 
-    constructor(public events: Events, private geolocation: Geolocation, private platform: Platform ) 
+    constructor(public events: Events, private geolocation: Geolocation, private platform: Platform, private androidPermissions: AndroidPermissions ) 
     {
         platform.ready().then(async () => 
         {
@@ -21,11 +23,24 @@ export class Locator {
             events.subscribe('testConnection', () => this.Test());
             events.subscribe('stopTracking', () => this.StopTracking());
 
-            try {
+            try {            
+                
+                this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION).then(
+                    result => this.events.publish("gwInfo",'Has permission?' + result.hasPermission.toString()),
+                    err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION)
+                );
+                
+                this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+                    result => this.events.publish("gwInfo",'Has permission?' +result.hasPermission.toString()),
+                    err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)
+                );
+
+                this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION, this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION]);
+
                 var pos = await this.geolocation.getCurrentPosition();
                 this.events.publish("gwInfo", `getCurrentPosition : lat: ${pos.coords.latitude}, lon: ${pos.coords.longitude}`);
             } catch (error) {
-                this.events.publish("gwError", error)
+                this.events.publish("gwError", error.message)
             }
         });
     }
@@ -51,7 +66,7 @@ export class Locator {
     StartTracking()
     {
         try {
-            this.watcher = this.geolocation.watchPosition().subscribe(pos => this.Watch(pos));
+            this.watcher = this.geolocation.watchPosition().filter((p) => p.coords !== undefined).subscribe(pos => this.Watch(pos));
         } catch (error) {
             this.events.publish("gwError", error);
         }
