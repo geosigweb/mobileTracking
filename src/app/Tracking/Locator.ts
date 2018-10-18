@@ -66,7 +66,8 @@ export class Locator {
     StartTracking()
     {
         try {
-            this.watcher = this.geolocation.watchPosition().filter((p) => p.coords !== undefined).subscribe(pos => this.Watch(pos));
+            var options = { enableHighAccuracy: false };
+            this.watcher = this.geolocation.watchPosition(options).filter((p) => p.coords !== undefined).subscribe(pos => this.Watch(pos));
         } catch (error) {
             this.events.publish("gwError", error);
         }
@@ -86,6 +87,7 @@ export class Locator {
     { 
         try {
             this.watcher.unsubscribe();
+            this.hubConnection.invoke("SendMessage",  this.trackFile, this.idVehicule, this.idParcours,"Infinite", "Infinite");
             this.events.publish("gwInfo", "Tracking stopped");
         } catch (error) {
             this.events.publish("gwError", error);

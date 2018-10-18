@@ -22,8 +22,6 @@ export class AppComponent {
     this.initializeApp();
   }
 
-  GetLocator() : Locator { return this.locator;}
-
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
