@@ -1,15 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Traceur CD 19 Mobile
+      Traceur CD 19 Mobile with background
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
   <ion-button expand="full" (click)="startTracking()">Start Tracking</ion-button>
-  <ion-button expand="full" (click)="testConnection()">Test Connection</ion-button>
   <ion-button expand="full" (click)="stopTracking()">Stop Tracking</ion-button>
+  
+  <ion-button expand="full" (click)="testConnection()">Test Connection</ion-button>
   Errors : {{errors}}<br>
   Infos : {{infos}}
 </ion-content>

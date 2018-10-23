@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { Geolocation,Geoposition } from '@ionic-native/geolocation/ngx';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { HubConnection } from '@aspnet/signalr';
 import { Subscription } from 'rxjs';
@@ -15,7 +16,7 @@ export class Locator {
     private idParcours: number;
     private watcher: Subscription;
 
-    constructor(public events: Events, private geolocation: Geolocation, private platform: Platform, private androidPermissions: AndroidPermissions ) 
+    constructor(public events: Events, private geolocation: Geolocation, private platform: Platform, private androidPermissions: AndroidPermissions, private backgroundMode: BackgroundMode ) 
     {
         platform.ready().then(async () => 
         {
@@ -24,6 +25,10 @@ export class Locator {
             events.subscribe('stopTracking', () => this.StopTracking());
 
             try {            
+
+                backgroundMode.disableWebViewOptimizations();
+                // backgroundMode.overrideBackButton();
+                backgroundMode.enable();
                 
                 this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION).then(
                     result => this.events.publish("gwInfo",'Has permission?' + result.hasPermission.toString()),
