@@ -59,12 +59,12 @@ export class Locator {
             this.trackFile = await this.GetTrackFileName();
             var options = { enableHighAccuracy: false };
                  
-            this.backgroundMode.enable();
             this.backgroundMode.on("activate").subscribe(()=> 
             { 
                 this.events.publish("gwInfo", `on activate`);
                 this.watcher = this.geolocation.watchPosition(options).filter((p) => p.coords !== undefined).subscribe(pos => this.Watch(pos));
             });
+            this.backgroundMode.enable();
         } catch (error) {
             this.events.publish("gwError", error);
         }
@@ -73,7 +73,8 @@ export class Locator {
     async StopTracking() 
     { 
         try {
-            this.watcher.unsubscribe();
+            if (this.watcher !== undefined) 
+                this.watcher.unsubscribe();
             var connection = await this.GetConnection();
             await connection.invoke("SendMessage",  this.trackFile, this.idVehicule, this.idParcours,"Infinite", "Infinite");
             await connection.stop();
