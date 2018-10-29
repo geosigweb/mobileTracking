@@ -63,8 +63,10 @@ export class Locator {
             { 
                 this.events.publish("gwInfo", `on activate`);
                 this.watcher = this.geolocation.watchPosition(options).filter((p) => p.coords !== undefined).subscribe(pos => this.Watch(pos));
+                this.backgroundMode.moveToForeground();
             });
             this.backgroundMode.enable();
+            this.watcher = this.geolocation.watchPosition(options).filter((p) => p.coords !== undefined).subscribe(pos => this.Watch(pos));
         } catch (error) {
             this.events.publish("gwError", error);
         }
