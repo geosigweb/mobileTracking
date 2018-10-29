@@ -22,7 +22,6 @@
     <platform name="android">
         <plugin name="cordova-custom-config" version="*" />
         <custom-config-file parent="/*" target="AndroidManifest.xml">
-            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
         </custom-config-file>
         <allow-intent href="market:*" />

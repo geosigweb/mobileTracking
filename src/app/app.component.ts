@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 
-import { LogLevel, HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
-
 import { Platform } from '@ionic/angular';
 import { Events } from '@ionic/angular';
 
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+
 import {Locator} from '../app/Tracking/Locator';
 
 @Component({
@@ -14,58 +14,28 @@ import {Locator} from '../app/Tracking/Locator';
   templateUrl: 'app.component.html'
 })
 export class AppComponent {
-  private hubConnection: HubConnection;
   constructor(
     public events : Events,
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
+    private backgroundMode: BackgroundMode,
     private locator: Locator
-  ) {
-    this.initializeApp();
-  }
-
-  public async GetConnection()
+  ) 
   {
-      try {
-        this.hubConnection= new HubConnectionBuilder()
-          .withUrl('https://geosigwebcd19webapi.azurewebsites.net/trackingHub')
-          .configureLogging(LogLevel.Information)
-          .build();
-        await this.hubConnection.start();
-      } catch (error) {
-        this.events.publish("gwError", error.message);
-      }
-    
-    return this.hubConnection;
-  }
-
-  public async TestConnection(trackFile, idVehicule, idParcours)
-  {
-    if (this.hubConnection === undefined)
-    {
-      this.hubConnection= new HubConnectionBuilder()
-          .withUrl('https://geosigwebcd19webapi.azurewebsites.net/trackingHub')
-          .configureLogging(LogLevel.Information)
-          .build();
-          
-      try {
-        await this.hubConnection.start();
-        await this.hubConnection.invoke("SendMessage",  trackFile, idVehicule, idParcours,"0", "0");
-      } catch (error) {
-        this.events.publish("gwInfo", 'Start Operation failed because ' + error);
-      } 
-     }
-  }
-
-
-  initializeApp() {
     this.platform.ready().then(() => 
     {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.locator.Initialize(this, 1,6);
+      this.backgroundMode.disableWebViewOptimizations();
+      this.backgroundMode.overrideBackButton();
+ 
+      this.backgroundMode.on("enable").subscribe(()=> { this.events.publish("gwInfo", `on enable`); });
+      this.backgroundMode.on("disable").subscribe(()=> { this.events.publish("gwInfo", `on disable`); });
+      this.backgroundMode.on("deactivate").subscribe(()=> { this.events.publish("gwInfo", `on deactivate`); });
+      this.backgroundMode.on("failure").subscribe(()=> { this.events.publish("gwInfo", `on failure`); });
+      
+      this.locator.Initialize(this.backgroundMode, 1,6);
     });
   }
-
 }
