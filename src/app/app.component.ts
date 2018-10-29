@@ -27,8 +27,6 @@ export class AppComponent {
 
   public async GetConnection()
   {
-    if (this.hubConnection === undefined)
-    {
       try {
         this.hubConnection= new HubConnectionBuilder()
           .withUrl('https://geosigwebcd19webapi.azurewebsites.net/trackingHub')
@@ -38,7 +36,7 @@ export class AppComponent {
       } catch (error) {
         this.events.publish("gwError", error.message);
       }
-    }
+    
     return this.hubConnection;
   }
 

@@ -93,6 +93,7 @@ export class Locator {
             this.watcher.unsubscribe();
             var connection = await this.appComponent.GetConnection();
             await connection.invoke("SendMessage",  this.trackFile, this.idVehicule, this.idParcours,"Infinite", "Infinite");
+            await connection.stop();
             this.events.publish("gwInfo", "Tracking stopped");
         } catch (error) {
             this.events.publish("gwError", error);
@@ -119,6 +120,7 @@ export class Locator {
             this.events.publish("gwInfo", `Watch Sending : lat: ${lat}, lon: ${lon}...`);
             var connection = await this.appComponent.GetConnection();
             await connection.invoke("SendMessage", this.trackFile, this.idVehicule, this.idParcours, lat, lon);
+            await connection.stop();
             this.events.publish("gwInfo", `Sent!`);
         } catch (error) {
             this.events.publish("gwError", error);
